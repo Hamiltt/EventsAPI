@@ -1,19 +1,18 @@
 using Application.Mapping;
 using Application.Services;
-using Common.Models;
 using EventsAPI.Middleware;
 using Infrastructure.Context;
 using Infrastructure.Initialization;
 using Infrastructure.Repositories;
 using Infrastructure.UnitOfWork;
+using Domain.Entities;
+using Domain.Repositories;
+using Domain.UnitOfWork;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
-var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
 
 builder.Services.AddDbContext<EventsDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -49,10 +48,7 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings.Issuer,
-        ValidAudience = jwtSettings.Audience,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
+        ValidateIssuerSigningKey = true
     };
 });
 

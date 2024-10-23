@@ -1,7 +1,7 @@
 ﻿using Common.DTOs;
-using Infrastructure.Entities;
+using Domain.Entities;
 
-namespace Infrastructure.Repositories
+namespace Domain.Repositories
 {
     public interface IEventRepository
     {

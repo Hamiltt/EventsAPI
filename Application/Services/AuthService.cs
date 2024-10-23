@@ -1,6 +1,6 @@
 ﻿using Common.DTOs;
-using Infrastructure.Entities;
-using Infrastructure.Repositories;
+using Domain.Entities;
+using Domain.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

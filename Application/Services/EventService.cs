@@ -1,8 +1,8 @@
 ﻿using Common.DTOs;
-using Infrastructure.Repositories;
+using Domain.Repositories;
 using AutoMapper;
-using Infrastructure.Entities;
-using Infrastructure.UnitOfWork;
+using Domain.Entities;
+using Domain.UnitOfWork;
 
 namespace Application.Services
 {

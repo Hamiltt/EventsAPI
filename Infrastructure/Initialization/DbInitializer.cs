@@ -1,5 +1,5 @@
 ﻿using Infrastructure.Context;
-using Infrastructure.Entities;
+using Domain.Entities;
 
 namespace Infrastructure.Initialization
 {

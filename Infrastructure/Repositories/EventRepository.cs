@@ -1,7 +1,8 @@
 ﻿using Common.DTOs;
 using Infrastructure.Context;
-using Infrastructure.Entities;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Domain.Repositories;
 
 namespace Infrastructure.Repositories
 {

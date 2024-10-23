@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Infrastructure.Context;
 using Infrastructure.Repositories;
 using Infrastructure.UnitOfWork;
+using Domain.Repositories;
+using Domain.UnitOfWork;
 
 namespace Events.Infrastructure
 {

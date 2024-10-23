@@ -1,5 +1,5 @@
 ﻿using Common.DTOs;
-using Infrastructure.Entities;
+using Domain.Entities;
 
 public interface IAuthService
 {
