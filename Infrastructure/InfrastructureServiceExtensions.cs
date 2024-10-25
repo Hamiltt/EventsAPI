@@ -12,15 +12,14 @@ namespace Events.Infrastructure
     {
         public static void AddInfrastructureServices(this IServiceCollection services, string connectionString)
         {
-            // Регистрация контекста базы данных с использованием Entity Framework Core
             services.AddDbContext<EventsDbContext>(options =>
-                options.UseSqlServer(connectionString)); // Используйте UseNpgsql для PostgreSQL
+                options.UseSqlServer(connectionString));
 
-            // Регистрация репозиториев
             services.AddScoped<IEventRepository, EventRepository>();
             services.AddScoped<IParticipantRepository, ParticipantRepository>();
+            services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
-            // Регистрация UnitOfWork, если используете его
             services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
     }

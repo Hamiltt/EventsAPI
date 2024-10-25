@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Common.DTOs;
-using Application.Services;
+using Application.UseCases.Events;
+using Domain.Exceptions;
 
 namespace EventsAPI.Controllers
 {
@@ -8,59 +9,97 @@ namespace EventsAPI.Controllers
     [Route("api/[controller]")]
     public class EventsController : ControllerBase
     {
-        private readonly IEventService _eventService;
+        private readonly GetAllEventsUseCase _getAllEventsUseCase;
+        private readonly GetEventByIdUseCase _getEventByIdUseCase;
+        private readonly GetEventsByNameUseCase _getEventsByNameUseCase;
+        private readonly CreateEventUseCase _createEventUseCase;
+        private readonly UpdateEventUseCase _updateEventUseCase;
+        private readonly DeleteEventUseCase _deleteEventUseCase;
 
-        public EventsController(IEventService eventService)
+        public EventsController(
+            GetAllEventsUseCase getAllEventsUseCase,
+            GetEventByIdUseCase getEventByIdUseCase,
+            GetEventsByNameUseCase getEventsByNameUseCase,
+            CreateEventUseCase createEventUseCase,
+            UpdateEventUseCase updateEventUseCase,
+            DeleteEventUseCase deleteEventUseCase)
         {
-            _eventService = eventService;
+            _getAllEventsUseCase = getAllEventsUseCase;
+            _getEventByIdUseCase = getEventByIdUseCase;
+            _getEventsByNameUseCase = getEventsByNameUseCase;
+            _createEventUseCase = createEventUseCase;
+            _updateEventUseCase = updateEventUseCase;
+            _deleteEventUseCase = deleteEventUseCase;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] EventFilterDTO filter)
         {
-            var events = await _eventService.GetEventsAsync(filter);
+            var events = await _getAllEventsUseCase.ExecuteAsync(filter);
             return Ok(events);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var eventDto = await _eventService.GetEventByIdAsync(id);
-            if (eventDto == null)
+            try
+            {
+                var eventDto = await _getEventByIdUseCase.ExecuteAsync(id);
+                return Ok(eventDto);
+            }
+            catch (NotFoundException)
+            {
                 return NotFound();
-            return Ok(eventDto);
+            }
         }
 
         [HttpGet("search")]
         public async Task<IActionResult> GetByName([FromQuery] string name)
         {
-            var events = await _eventService.GetEventsByNameAsync(name);
+            var events = await _getEventsByNameUseCase.ExecuteAsync(name);
             return Ok(events);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateEventDTO createEventDto)
         {
-            var eventDto = await _eventService.CreateEventAsync(createEventDto);
-            return CreatedAtAction(nameof(GetById), new { id = eventDto.Id }, eventDto);
+            try
+            {
+                var eventDto = await _createEventUseCase.ExecuteAsync(createEventDto);
+                return CreatedAtAction(nameof(GetById), new { id = eventDto.Id }, eventDto);
+            }
+            catch (AlreadyExistsException)
+            {
+                return BadRequest("Event already exists.");
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateEventDTO updateEventDto)
         {
-            var updated = await _eventService.UpdateEventAsync(id, updateEventDto);
-            if (!updated)
+            try
+            {
+                await _updateEventUseCase.ExecuteAsync(id, updateEventDto);
+                return NoContent();
+            }
+            catch (NotFoundException)
+            {
                 return NotFound();
-            return NoContent();
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _eventService.DeleteEventAsync(id);
-            if (!deleted)
+            try
+            {
+                await _deleteEventUseCase.ExecuteAsync(id);
+                return NoContent();
+            }
+            catch (NotFoundException)
+            {
                 return NotFound();
-            return NoContent();
+            }
         }
     }
 }

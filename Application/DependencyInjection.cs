@@ -1,18 +1,29 @@
-﻿using Application.Services;
+﻿using Application.UseCases.Auth;
+using Application.UseCases.Events;
+using Application.UseCases.Participants;
 using Microsoft.Extensions.DependencyInjection;
-using System.Runtime.CompilerServices;
 
-public static class DependencyInjection
+namespace Application
 {
-    public static void AddApplicationServices(this IServiceCollection services)
+    public static class DependencyInjection
     {
-        services.AddScoped<IEventService, EventService>();
-        services.AddScoped<IParticipantService, ParticipantService>();
-        services.AddScoped<IAuthService, AuthService>();
+        public static void AddApplicationServices(this IServiceCollection services)
+        {
+            services.AddScoped<LoginUseCase>();
+            services.AddScoped<RefreshTokenUseCase>();
+            services.AddScoped<GetUserFromTokenUseCase>();
 
-        // Регистрация репозиториев
-        //services.AddScoped<IEventRepository, EventRepository>();
-        //services.AddScoped<IParticipantRepository, ParticipantRepository>();
-        //services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<CreateEventUseCase>();
+            services.AddScoped<DeleteEventUseCase>();
+            services.AddScoped<GetEventByIdUseCase>();
+            services.AddScoped<UpdateEventUseCase>();
+            services.AddScoped<GetAllEventsUseCase>();
+            services.AddScoped<GetEventsByNameUseCase>();
+
+            services.AddScoped<GetParticipantByIdUseCase>();
+            services.AddScoped<GetParticipantsByEventUseCase>();
+            services.AddScoped<RegisterParticipantUseCase>();
+            services.AddScoped<UnregisterParticipantUseCase>();
+        }
     }
 }

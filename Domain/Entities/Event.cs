@@ -11,5 +11,30 @@
         public int MaxParticipants { get; set; }
         public List<Participant> Participants { get; set; }
         public byte[] Image { get; set; }
+
+        public Event(string name, int maxParticipants)
+        {
+            Name = name;
+            MaxParticipants = maxParticipants;
+            Participants = new List<Participant>();
+        }
+
+        public bool CanRegisterParticipant()
+        {
+            return Participants.Count < MaxParticipants;
+        }
+
+        public void AddParticipant(Participant participant)
+        {
+            if (CanRegisterParticipant())
+            {
+                Participants.Add(participant);
+            }
+        }
+
+        public void RemoveParticipant(Participant participant)
+        {
+            Participants.Remove(participant);
+        }
     }
 }

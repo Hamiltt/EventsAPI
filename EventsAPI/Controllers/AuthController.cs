@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Common.DTOs;
+using Application.UseCases.Auth;
+using Domain.Exceptions;
 
 namespace EventsAPI.Controllers
 {
@@ -7,29 +9,43 @@ namespace EventsAPI.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthService _authService;
+        private readonly LoginUseCase _loginUseCase;
+        private readonly RefreshTokenUseCase _refreshTokenUseCase;
 
-        public AuthController(IAuthService authService)
+        public AuthController(
+            LoginUseCase loginUseCase,
+            RefreshTokenUseCase refreshTokenUseCase)
         {
-            _authService = authService;
+            _loginUseCase = loginUseCase;
+            _refreshTokenUseCase = refreshTokenUseCase;
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
         {
-            var tokenResponse = await _authService.AuthenticateAsync(loginDto);
-            if (tokenResponse == null)
+            try
+            {
+                var tokenResponse = await _loginUseCase.HandleAsync(loginDto);
+                return Ok(tokenResponse);
+            }
+            catch (UnauthorizedException)
+            {
                 return Unauthorized();
-            return Ok(tokenResponse);
+            }
         }
 
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh([FromBody] TokenResponse tokenResponse)
         {
-            var newTokenResponse = await _authService.RefreshTokenAsync(tokenResponse);
-            if (newTokenResponse == null)
+            try
+            {
+                var newTokenResponse = await _refreshTokenUseCase.HandleAsync(tokenResponse);
+                return Ok(newTokenResponse);
+            }
+            catch (UnauthorizedException)
+            {
                 return Unauthorized();
-            return Ok(newTokenResponse);
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Common.DTOs;
-using Application.Services;
+using Application.UseCases.Participants;
+using Domain.Exceptions;
 
 namespace EventsAPI.Controllers
 {
@@ -8,45 +9,74 @@ namespace EventsAPI.Controllers
     [Route("api/[controller]")]
     public class ParticipantsController : ControllerBase
     {
-        private readonly IParticipantService _participantService;
+        private readonly GetParticipantsByEventUseCase _getParticipantsByEventUseCase;
+        private readonly GetParticipantByIdUseCase _getParticipantByIdUseCase;
+        private readonly RegisterParticipantUseCase _registerParticipantUseCase;
+        private readonly UnregisterParticipantUseCase _unregisterParticipantUseCase;
 
-        public ParticipantsController(IParticipantService participantService)
+        public ParticipantsController(
+            GetParticipantsByEventUseCase getParticipantsByEventUseCase,
+            GetParticipantByIdUseCase getParticipantByIdUseCase,
+            RegisterParticipantUseCase registerParticipantUseCase,
+            UnregisterParticipantUseCase unregisterParticipantUseCase)
         {
-            _participantService = participantService;
+            _getParticipantsByEventUseCase = getParticipantsByEventUseCase;
+            _getParticipantByIdUseCase = getParticipantByIdUseCase;
+            _registerParticipantUseCase = registerParticipantUseCase;
+            _unregisterParticipantUseCase = unregisterParticipantUseCase;
         }
 
         [HttpGet("{eventId}/participants")]
         public async Task<IActionResult> GetParticipants(int eventId)
         {
-            var participants = await _participantService.GetParticipantsByEventAsync(eventId);
+            var participants = await _getParticipantsByEventUseCase.ExecuteAsync(eventId);
             return Ok(participants);
         }
 
         [HttpGet("{eventId}/participants/{participantId}")]
         public async Task<IActionResult> GetParticipantById(int eventId, int participantId)
         {
-            var participant = await _participantService.GetParticipantByIdAsync(eventId, participantId);
-            if (participant == null)
+            try
+            {
+                var participant = await _getParticipantByIdUseCase.ExecuteAsync(eventId, participantId);
+                return Ok(participant);
+            }
+            catch (NotFoundException)
+            {
                 return NotFound();
-            return Ok(participant);
+            }
         }
 
         [HttpPost("{eventId}/register")]
         public async Task<IActionResult> Register(int eventId, [FromBody] RegisterParticipantDTO registerDto)
         {
-            var result = await _participantService.RegisterParticipantAsync(eventId, registerDto);
-            if (!result)
+            try
+            {
+                await _registerParticipantUseCase.ExecuteAsync(eventId, registerDto);
+                return NoContent();
+            }
+            catch (BadRequestException)
+            {
                 return BadRequest();
-            return NoContent();
+            }
+            catch (AlreadyExistsException)
+            {
+                return BadRequest("Participant already registered.");
+            }
         }
 
         [HttpDelete("{eventId}/participants/{participantId}")]
         public async Task<IActionResult> Unregister(int eventId, int participantId)
         {
-            var result = await _participantService.UnregisterParticipantAsync(eventId, participantId);
-            if (!result)
+            try
+            {
+                await _unregisterParticipantUseCase.ExecuteAsync(eventId, participantId);
+                return NoContent();
+            }
+            catch (NotFoundException)
+            {
                 return NotFound();
-            return NoContent();
+            }
         }
     }
 }
