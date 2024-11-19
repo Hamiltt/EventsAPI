@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Common.DTOs;
 using Application.UseCases.Participants;
-using Domain.Exceptions;
+using Common.Exceptions;
 
 namespace EventsAPI.Controllers
 {
@@ -36,47 +36,22 @@ namespace EventsAPI.Controllers
         [HttpGet("{eventId}/participants/{participantId}")]
         public async Task<IActionResult> GetParticipantById(int eventId, int participantId)
         {
-            try
-            {
-                var participant = await _getParticipantByIdUseCase.ExecuteAsync(eventId, participantId);
-                return Ok(participant);
-            }
-            catch (NotFoundException)
-            {
-                return NotFound();
-            }
+            var participant = await _getParticipantByIdUseCase.ExecuteAsync(eventId, participantId);
+            return Ok(participant);
         }
 
         [HttpPost("{eventId}/register")]
         public async Task<IActionResult> Register(int eventId, [FromBody] RegisterParticipantDTO registerDto)
         {
-            try
-            {
-                await _registerParticipantUseCase.ExecuteAsync(eventId, registerDto);
-                return NoContent();
-            }
-            catch (BadRequestException)
-            {
-                return BadRequest();
-            }
-            catch (AlreadyExistsException)
-            {
-                return BadRequest("Participant already registered.");
-            }
+            await _registerParticipantUseCase.ExecuteAsync(eventId, registerDto);
+            return NoContent();
         }
 
         [HttpDelete("{eventId}/participants/{participantId}")]
         public async Task<IActionResult> Unregister(int eventId, int participantId)
         {
-            try
-            {
-                await _unregisterParticipantUseCase.ExecuteAsync(eventId, participantId);
-                return NoContent();
-            }
-            catch (NotFoundException)
-            {
-                return NotFound();
-            }
+            await _unregisterParticipantUseCase.ExecuteAsync(eventId, participantId);
+            return NoContent();
         }
     }
 }

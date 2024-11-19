@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Common.DTOs;
-using Domain.Exceptions;
+using Common.Exceptions;
 using Domain.Repositories;
 
 namespace Application.UseCases.Events

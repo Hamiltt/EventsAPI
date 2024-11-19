@@ -1,27 +1,23 @@
-﻿using Infrastructure.Context;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Domain.Repositories;
+using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : GenericRepository<User>, IUserRepository
     {
-        private readonly EventsDbContext _context;
+        public UserRepository(EventsDbContext context) : base(context) { }
 
-        public UserRepository(EventsDbContext context)
+        public async Task<User> GetByUsernameAndPasswordAsync(string username, string passwordHash)
         {
-            _context = context;
-        }
-
-        public async Task<User> GetByUsernameAndPasswordAsync(string username, string password)
-        {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Username == username && u.PasswordHash == password);
+            return await _dbSet.FirstOrDefaultAsync(u => u.Username == username && u.PasswordHash == passwordHash);
         }
 
         public async Task<User> GetByUsernameAsync(string username)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            return await _dbSet.FirstOrDefaultAsync(u => u.Username == username);
         }
     }
 }

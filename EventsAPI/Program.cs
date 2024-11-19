@@ -13,6 +13,8 @@ using Application.UseCases.Participants;
 using Application.UseCases.Auth;
 using System.Text;
 using Application;
+using Application.Providers;
+using Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +28,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationServices();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddAutoMapper(typeof(EventProfile));
+builder.Services.AddAutoMapper(typeof(EventProfile), typeof(ParticipantProfile));
 
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<IParticipantRepository, ParticipantRepository>();
@@ -45,9 +47,11 @@ builder.Services.AddScoped<UnregisterParticipantUseCase>();
 
 builder.Services.AddScoped<LoginUseCase>();
 builder.Services.AddScoped<RefreshTokenUseCase>();
-builder.Services.AddScoped<GetUserFromTokenUseCase>();
 
-// Настройка аутентификации с JWT
+builder.Services.AddScoped<IUserProvider, UserProvider>();
+builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<TokenValidationService>();
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -73,7 +77,7 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
+    app.UseSwagger();   
     app.UseSwaggerUI();
 }
 

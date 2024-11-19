@@ -1,4 +1,4 @@
-﻿using Domain.Exceptions;
+﻿using Common.Exceptions;
 using Domain.Repositories;
 using Domain.UnitOfWork;
 

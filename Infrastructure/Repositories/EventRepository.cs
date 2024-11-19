@@ -1,23 +1,18 @@
 ﻿using Common.DTOs;
-using Infrastructure.Context;
 using Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 using Domain.Repositories;
+using Infrastructure.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
-    public class EventRepository : IEventRepository
+    public class EventRepository : GenericRepository<Event>, IEventRepository
     {
-        private readonly EventsDbContext _context;
-
-        public EventRepository(EventsDbContext context)
-        {
-            _context = context;
-        }
+        public EventRepository(EventsDbContext context) : base(context) { }
 
         public async Task<List<Event>> GetAllAsync(EventFilterDTO filter)
         {
-            var query = _context.Events.Include(e => e.Participants).AsQueryable();
+            var query = _dbSet.Include(e => e.Participants).AsQueryable();
 
             if (filter.Date.HasValue)
                 query = query.Where(e => e.Date.Date == filter.Date.Value.Date);
@@ -26,30 +21,18 @@ namespace Infrastructure.Repositories
             if (!string.IsNullOrEmpty(filter.Category))
                 query = query.Where(e => e.Category == filter.Category);
 
-            return await query.ToListAsync();
-        }
+            // Применение пагинации
+            query = query.Skip((filter.PageNumber - 1) * filter.PageSize)
+                         .Take(filter.PageSize);
 
-        public async Task<Event> GetByIdAsync(int id)
-        {
-            return await _context.Events.Include(e => e.Participants)
-                                        .FirstOrDefaultAsync(e => e.Id == id);
+            return await query.ToListAsync();
         }
 
         public async Task<List<Event>> GetByNameAsync(string name)
         {
-            return await _context.Events.Include(e => e.Participants)
-                                        .Where(e => e.Name.Contains(name))
-                                        .ToListAsync();
-        }
-
-        public async Task AddAsync(Event eventEntity)
-        {
-            await _context.Events.AddAsync(eventEntity);
-        }
-
-        public void Remove(Event eventEntity)
-        {
-            _context.Events.Remove(eventEntity);
+            return await _dbSet.Include(e => e.Participants)
+                                .Where(e => e.Name.Contains(name))
+                                .ToListAsync();
         }
     }
 }

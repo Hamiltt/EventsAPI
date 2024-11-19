@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Domain.Exceptions
+namespace Common.Exceptions
 {
     public class UnauthorizedException : Exception
     {

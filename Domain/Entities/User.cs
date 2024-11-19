@@ -7,9 +7,9 @@
         public string PasswordHash { get; set; }
         public string Email { get; set; }
 
-        public bool VerifyPassword(string passwordHash)
+        public bool VerifyPassword(string hashedPassword)
         {
-            return PasswordHash == passwordHash;
+            return PasswordHash == hashedPassword;
         }
     }
 }

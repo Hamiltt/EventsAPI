@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using Common.Exceptions;
 
 namespace EventsAPI.Middleware
 {
@@ -29,8 +30,24 @@ namespace EventsAPI.Middleware
         private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            return context.Response.WriteAsync(new { error = "An unexpected error occurred." }.ToString());
+
+            var statusCode = exception switch
+            {
+                UnauthorizedException => HttpStatusCode.Unauthorized,
+                NotFoundException => HttpStatusCode.NotFound,
+                BadRequestException => HttpStatusCode.BadRequest,
+                AlreadyExistsException => HttpStatusCode.Conflict,
+                _ => HttpStatusCode.InternalServerError
+            };
+
+            context.Response.StatusCode = (int)statusCode;
+
+            var response = new
+            {
+                error = exception.Message
+            };
+
+            return context.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(response));
         }
     }
 }

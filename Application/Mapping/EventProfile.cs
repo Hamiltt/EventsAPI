@@ -11,9 +11,6 @@ namespace Application.Mapping
             CreateMap<Event, EventDTO>();
             CreateMap<CreateEventDTO, Event>();
             CreateMap<UpdateEventDTO, Event>();
-
-            CreateMap<Participant, ParticipantDTO>();
-            CreateMap<RegisterParticipantDTO, Participant>();
         }
     }
 }

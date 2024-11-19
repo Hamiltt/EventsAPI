@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Common.DTOs;
 using Application.UseCases.Events;
-using Domain.Exceptions;
+using Common.Exceptions;
 
 namespace EventsAPI.Controllers
 {
@@ -42,15 +42,9 @@ namespace EventsAPI.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            try
-            {
-                var eventDto = await _getEventByIdUseCase.ExecuteAsync(id);
-                return Ok(eventDto);
-            }
-            catch (NotFoundException)
-            {
-                return NotFound();
-            }
+            var eventDto = await _getEventByIdUseCase.ExecuteAsync(id);
+            return Ok(eventDto);
+
         }
 
         [HttpGet("search")]
@@ -63,43 +57,23 @@ namespace EventsAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateEventDTO createEventDto)
         {
-            try
-            {
-                var eventDto = await _createEventUseCase.ExecuteAsync(createEventDto);
-                return CreatedAtAction(nameof(GetById), new { id = eventDto.Id }, eventDto);
-            }
-            catch (AlreadyExistsException)
-            {
-                return BadRequest("Event already exists.");
-            }
+            var eventDto = await _createEventUseCase.ExecuteAsync(createEventDto);
+            return CreatedAtAction(nameof(GetById), new { id = eventDto.Id }, eventDto);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateEventDTO updateEventDto)
         {
-            try
-            {
-                await _updateEventUseCase.ExecuteAsync(id, updateEventDto);
-                return NoContent();
-            }
-            catch (NotFoundException)
-            {
-                return NotFound();
-            }
+            await _updateEventUseCase.ExecuteAsync(id, updateEventDto);
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            try
-            {
-                await _deleteEventUseCase.ExecuteAsync(id);
-                return NoContent();
-            }
-            catch (NotFoundException)
-            {
-                return NotFound();
-            }
+            await _deleteEventUseCase.ExecuteAsync(id);
+            return NoContent();
+
         }
     }
 }

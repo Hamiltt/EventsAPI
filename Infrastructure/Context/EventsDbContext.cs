@@ -1,5 +1,5 @@
-﻿using Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Domain.Entities;
 
 namespace Infrastructure.Context
 {
@@ -9,21 +9,11 @@ namespace Infrastructure.Context
         public DbSet<Participant> Participants { get; set; }
         public DbSet<User> Users { get; set; }
 
-        public EventsDbContext(DbContextOptions<EventsDbContext> options) : base(options)
-        {
-        }
+        public EventsDbContext(DbContextOptions<EventsDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Event>()
-                .HasMany(e => e.Participants)
-                .WithOne(p => p.Event)
-                .HasForeignKey(p => p.EventId);
-
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.Username)
-                .IsUnique();
-
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(EventsDbContext).Assembly);
             base.OnModelCreating(modelBuilder);
         }
     }

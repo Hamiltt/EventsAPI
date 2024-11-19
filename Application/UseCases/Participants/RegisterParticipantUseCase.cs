@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Common.DTOs;
 using Domain.Entities;
-using Domain.Exceptions;
+using Common.Exceptions;
 using Domain.Repositories;
 using Domain.UnitOfWork;
 
@@ -11,13 +11,20 @@ namespace Application.UseCases.Participants
     {
         private readonly IParticipantRepository _participantRepository;
         private readonly IEventRepository _eventRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public RegisterParticipantUseCase(IParticipantRepository participantRepository, IEventRepository eventRepository, IUnitOfWork unitOfWork, IMapper mapper)
+        public RegisterParticipantUseCase(
+            IParticipantRepository participantRepository,
+            IEventRepository eventRepository,
+            IUserRepository userRepository,
+            IUnitOfWork unitOfWork,
+            IMapper mapper)
         {
             _participantRepository = participantRepository;
             _eventRepository = eventRepository;
+            _userRepository = userRepository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
@@ -38,6 +45,13 @@ namespace Application.UseCases.Participants
             if (eventEntity.Participants.Count >= eventEntity.MaxParticipants)
             {
                 throw new BadRequestException($"Event with id {eventId} has reached its maximum number of participants.");
+            }
+
+            // Проверка существования пользователя
+            var user = await _userRepository.GetByUsernameAsync(registerDto.Username);
+            if (user == null)
+            {
+                throw new NotFoundException($"User with username {registerDto.Username} not found.");
             }
 
             var participant = _mapper.Map<Participant>(registerDto);

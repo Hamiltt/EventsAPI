@@ -11,7 +11,6 @@ namespace Application
         {
             services.AddScoped<LoginUseCase>();
             services.AddScoped<RefreshTokenUseCase>();
-            services.AddScoped<GetUserFromTokenUseCase>();
 
             services.AddScoped<CreateEventUseCase>();
             services.AddScoped<DeleteEventUseCase>();

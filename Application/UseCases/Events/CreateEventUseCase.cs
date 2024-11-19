@@ -3,7 +3,7 @@ using Domain.Entities;
 using Domain.Repositories;
 using Domain.UnitOfWork;
 using AutoMapper;
-using Domain.Exceptions;
+using Common.Exceptions;
 
 namespace Application.UseCases.Events
 {
