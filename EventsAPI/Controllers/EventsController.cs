@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.UseCases.Events;
 using Common.DTOs;
-using Application.UseCases.Events;
-using Common.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EventsAPI.Controllers
 {
@@ -55,16 +54,16 @@ namespace EventsAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateEventDTO createEventDto)
+        public async Task<IActionResult> Create([FromBody] CreateEventRequest createEventRequest)
         {
-            var eventDto = await _createEventUseCase.ExecuteAsync(createEventDto);
+            var eventDto = await _createEventUseCase.ExecuteAsync(createEventRequest);
             return CreatedAtAction(nameof(GetById), new { id = eventDto.Id }, eventDto);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateEventDTO updateEventDto)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateEventRequest updateEventRequest)
         {
-            await _updateEventUseCase.ExecuteAsync(id, updateEventDto);
+            await _updateEventUseCase.ExecuteAsync(id, updateEventRequest);
             return NoContent();
         }
 

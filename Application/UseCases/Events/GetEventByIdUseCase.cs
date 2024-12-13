@@ -1,18 +1,18 @@
 ﻿using AutoMapper;
 using Common.DTOs;
 using Common.Exceptions;
-using Domain.Repositories;
+using Domain.UnitOfWork;
 
 namespace Application.UseCases.Events
 {
     public class GetEventByIdUseCase
     {
-        private readonly IEventRepository _eventRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public GetEventByIdUseCase(IEventRepository eventRepository, IMapper mapper)
+        public GetEventByIdUseCase(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _eventRepository = eventRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -23,7 +23,7 @@ namespace Application.UseCases.Events
                 throw new BadRequestException("Invalid event id.");
             }
 
-            var eventEntity = await _eventRepository.GetByIdAsync(id);
+            var eventEntity = await _unitOfWork.Events.GetByIdAsync(id);
             if (eventEntity == null)
             {
                 throw new NotFoundException($"Event with id {id} not found.");

@@ -10,12 +10,12 @@ namespace Application.Providers
 {
     public class UserProvider : IUserProvider
     {
-        private readonly IAuthRepository _authRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
 
-        public UserProvider(IAuthRepository authRepository, IConfiguration configuration)
+        public UserProvider(IUserRepository userRepository, IConfiguration configuration)
         {
-            _authRepository = authRepository;
+            _userRepository = userRepository;
             _configuration = configuration;
         }
 
@@ -25,7 +25,7 @@ namespace Application.Providers
             if (principal?.Identity?.IsAuthenticated ?? false)
             {
                 var username = principal.FindFirstValue(ClaimTypes.Name);
-                return await _authRepository.GetUserByUsernameAsync(username);
+                return await _userRepository.GetByUsernameAsync(username);
             }
             return null;
         }

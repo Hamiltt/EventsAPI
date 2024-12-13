@@ -1,18 +1,18 @@
 ﻿using AutoMapper;
 using Common.DTOs;
 using Common.Exceptions;
-using Domain.Repositories;
+using Domain.UnitOfWork;
 
 namespace Application.UseCases.Participants
 {
     public class GetParticipantByIdUseCase
     {
-        private readonly IParticipantRepository _participantRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public GetParticipantByIdUseCase(IParticipantRepository participantRepository, IMapper mapper)
+        public GetParticipantByIdUseCase(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _participantRepository = participantRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -23,7 +23,7 @@ namespace Application.UseCases.Participants
                 throw new BadRequestException("Invalid event or participant id.");
             }
 
-            var participant = await _participantRepository.GetByIdAsync(participantId);
+            var participant = await _unitOfWork.Participants.GetByIdAsync(participantId);
             if (participant == null || participant.EventId != eventId)
             {
                 throw new NotFoundException($"Participant with id {participantId} not found for event id {eventId}.");

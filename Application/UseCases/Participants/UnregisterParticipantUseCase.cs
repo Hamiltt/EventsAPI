@@ -1,17 +1,14 @@
 ﻿using Common.Exceptions;
-using Domain.Repositories;
 using Domain.UnitOfWork;
 
 namespace Application.UseCases.Participants
 {
     public class UnregisterParticipantUseCase
     {
-        private readonly IParticipantRepository _participantRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public UnregisterParticipantUseCase(IParticipantRepository participantRepository, IUnitOfWork unitOfWork)
+        public UnregisterParticipantUseCase(IUnitOfWork unitOfWork)
         {
-            _participantRepository = participantRepository;
             _unitOfWork = unitOfWork;
         }
 
@@ -22,13 +19,13 @@ namespace Application.UseCases.Participants
                 throw new BadRequestException("Invalid event or participant id.");
             }
 
-            var participant = await _participantRepository.GetByIdAsync(participantId);
+            var participant = await _unitOfWork.Participants.GetByIdAsync(participantId);
             if (participant == null || participant.EventId != eventId)
             {
                 throw new NotFoundException($"Participant with id {participantId} not found for event id {eventId}.");
             }
 
-            _participantRepository.Remove(participant);
+            _unitOfWork.Participants.Remove(participant);
             await _unitOfWork.CompleteAsync();
 
             return true;

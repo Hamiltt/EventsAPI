@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.UseCases.Participants;
 using Common.DTOs;
-using Application.UseCases.Participants;
-using Common.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EventsAPI.Controllers
 {
@@ -41,9 +40,9 @@ namespace EventsAPI.Controllers
         }
 
         [HttpPost("{eventId}/register")]
-        public async Task<IActionResult> Register(int eventId, [FromBody] RegisterParticipantDTO registerDto)
+        public async Task<IActionResult> Register(int eventId, [FromBody] RegisterParticipantRequest registerRequest)
         {
-            await _registerParticipantUseCase.ExecuteAsync(eventId, registerDto);
+            await _registerParticipantUseCase.ExecuteAsync(eventId, registerRequest);
             return NoContent();
         }
 

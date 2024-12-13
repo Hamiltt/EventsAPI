@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Common.DTOs;
 using Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -15,6 +16,17 @@ namespace Application.Services
         public TokenService(IConfiguration configuration)
         {
             _configuration = configuration;
+        }
+
+        public async Task<TokenResponse> CreateTokensAsync(User user)
+        {
+            var accessToken = GenerateJwtToken(user);
+            var refreshToken = GenerateRefreshToken();
+            return new TokenResponse
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken
+            };
         }
 
         public string GenerateJwtToken(User user)

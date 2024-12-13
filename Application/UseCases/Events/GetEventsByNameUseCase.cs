@@ -1,21 +1,24 @@
 ﻿using AutoMapper;
 using Common.DTOs;
-using Domain.Repositories;
+using Domain.UnitOfWork;
 
-public class GetEventsByNameUseCase
+namespace Application.UseCases.Events
 {
-    private readonly IEventRepository _eventRepository;
-    private readonly IMapper _mapper;
-
-    public GetEventsByNameUseCase(IEventRepository eventRepository, IMapper mapper)
+    public class GetEventsByNameUseCase
     {
-        _eventRepository = eventRepository;
-        _mapper = mapper;
-    }
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-    public async Task<List<EventDTO>> ExecuteAsync(string name)
-    {
-        var events = await _eventRepository.GetByNameAsync(name);
-        return _mapper.Map<List<EventDTO>>(events);
+        public GetEventsByNameUseCase(IUnitOfWork unitOfWork, IMapper mapper)
+        {
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+        }
+
+        public async Task<List<EventDTO>> ExecuteAsync(string name)
+        {
+            var events = await _unitOfWork.Events.GetByNameAsync(name);
+            return _mapper.Map<List<EventDTO>>(events);
+        }
     }
 }

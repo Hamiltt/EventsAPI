@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace Application.Validators
 {
-    public class EventValidator : AbstractValidator<CreateEventDTO>
+    public class UpdateEventRequestValidator : AbstractValidator<UpdateEventRequest>
     {
-        public EventValidator()
+        public UpdateEventRequestValidator()
         {
             RuleFor(e => e.Name)
                 .NotEmpty().WithMessage("Event name is required")

@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.UseCases.Auth;
 using Common.DTOs;
-using Application.UseCases.Auth;
-using Common.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EventsAPI.Controllers
 {
@@ -21,17 +20,16 @@ namespace EventsAPI.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
+        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
-
-            var tokenResponse = await _loginUseCase.HandleAsync(loginDto);
+            var tokenResponse = await _loginUseCase.HandleAsync(loginRequest);
             return Ok(tokenResponse);
         }
 
         [HttpPost("refresh")]
-        public async Task<IActionResult> Refresh([FromBody] TokenResponse tokenResponse)
+        public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest refreshTokenRequest)
         {
-            var newTokenResponse = await _refreshTokenUseCase.HandleAsync(tokenResponse);
+            var newTokenResponse = await _refreshTokenUseCase.HandleAsync(refreshTokenRequest);
             return Ok(newTokenResponse);
         }
     }

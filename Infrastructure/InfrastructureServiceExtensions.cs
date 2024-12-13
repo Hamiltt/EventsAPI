@@ -17,7 +17,6 @@ namespace Events.Infrastructure
 
             services.AddScoped<IEventRepository, EventRepository>();
             services.AddScoped<IParticipantRepository, ParticipantRepository>();
-            services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
